@@ -40,10 +40,6 @@ class ProdPayloadController extends Controller
             ? (string) config('googlepay.prod_private_key')
             : (string) config('googlepay.private_key');
 
-        $paymentMethodKeysUrl = $isProd
-            ? (string) config('googlepay.prod_payment_method_keys_url')
-            : (string) config('googlepay.payment_method_keys_url');
-
         $sanitizer = config('googlepay.logger_sanitizer');
 
         if ($merchantId === '' || $privateKey === '') {
@@ -67,7 +63,6 @@ class ProdPayloadController extends Controller
             $google = new GooglePay([
                 'merchantId' => $merchantId,
                 'privateKey' => $privateKey,
-                'paymentMethodKeysUrl' => $paymentMethodKeysUrl,
                 'logger' => logger(),
                 'loggerSettings' => [
                     'sanitizer' => $sanitizer,
@@ -78,9 +73,7 @@ class ProdPayloadController extends Controller
                 ],
             ]);
 
-            $envEnum = $isProd
-                ? GooglePayEnvironment::PRODUCTION
-                : GooglePayEnvironment::TEST;
+            $envEnum = $isProd ? GooglePayEnvironment::PRODUCTION : GooglePayEnvironment::TEST;
 
             $payload = $google->checkout($data['token'], $envEnum);
 
