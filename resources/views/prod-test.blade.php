@@ -136,12 +136,22 @@
         <form method="POST" action="{{ route('prod-test.decrypt') }}">
             @csrf
 
-            <div class="row">
-                <label for="environment">Environment</label>
-                <select name="environment" id="environment" required>
-                    <option value="PRODUCTION" {{ old('environment', 'PRODUCTION') === 'PRODUCTION' ? 'selected' : '' }}>PRODUCTION (usa GOOGLEPAY_PROD_PRIVATE_KEY)</option>
-                    <option value="TEST" {{ old('environment') === 'TEST' ? 'selected' : '' }}>TEST (usa GOOGLEPAY_PRIVATE_KEY)</option>
-                </select>
+            <div class="row grid-2">
+                <div>
+                    <label for="environment">Environment</label>
+                    <select name="environment" id="environment" required>
+                        <option value="PRODUCTION" {{ old('environment', $environment ?? 'PRODUCTION') === 'PRODUCTION' ? 'selected' : '' }}>PRODUCTION (usa GOOGLEPAY_PROD_PRIVATE_KEY)</option>
+                        <option value="TEST" {{ old('environment', $environment ?? '') === 'TEST' ? 'selected' : '' }}>TEST (usa GOOGLEPAY_PRIVATE_KEY)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="merchantId">Merchant ID</label>
+                    <input list="merchantId-list" id="merchantId" name="merchantId" required value="{{ old('merchantId', $merchantId ?? '') }}" placeholder="Escribe o selecciona el Merchant ID">
+                    <datalist id="merchantId-list">
+                        <option value="placetopay">
+                        <option value="googletest">
+                    </datalist>
+                </div>
             </div>
 
             <div class="row">

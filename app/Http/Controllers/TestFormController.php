@@ -23,9 +23,12 @@ class TestFormController extends Controller
 
     public function decrypt(Request $request): View|RedirectResponse
     {
-        $data = $request->validate(['token' => ['required', 'string']]);
+        $data = $request->validate([
+            'token' => ['required', 'string'],
+            'merchantId' => ['required', 'string'],
+        ]);
 
-        $merchantId = (string) config('googlepay.merchant_id');
+        $merchantId = $data['merchantId'] ?? null;
         $privateKey = (string) config('googlepay.private_key');
 
         error_log('[TestFormController::decrypt] Using merchantId: ' . $merchantId);
@@ -39,7 +42,7 @@ class TestFormController extends Controller
 
             return redirect('/')
                 ->with('success', false)
-                ->with('error', 'Configura GOOGLEPAY_MERCHANT_ID y GOOGLEPAY_PRIVATE_KEY en el .env antes de desencriptar.');
+                ->with('error', 'envia un  merchantId y Configura GOOGLEPAY_PRIVATE_KEY en el .env antes de desencriptar.');
         }
 
         try {

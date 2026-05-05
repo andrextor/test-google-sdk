@@ -89,6 +89,11 @@
             color: #3730a3;
             margin-bottom: 10px;
         }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 16px;
+        }
     </style>
 </head>
 <body>
@@ -126,6 +131,10 @@
         <form method="POST" action="{{ route('test-form.decrypt') }}">
             @csrf
             <div class="row">
+                <label for="merchantId"><strong>Merchant ID</strong></label>
+                <input id="merchantId" name="merchantId" required value="{{ old('merchantId', $merchantId ?? 'placetopay') }}" placeholder="Merchant ID" style="border: 2px solid #6366f1; background: #f5f3ff; color: #3730a3; font-weight: 600;">
+            </div>
+            <div class="row">
                 <label for="token"><strong>Token (JSON con signedMessage)</strong></label>
                 <textarea id="token" name="token" required>{{ old('token') }}</textarea>
             </div>
@@ -154,7 +163,7 @@
 
     <script>
         const gatewayMerchantId = @json((string) config('googlepay.gateway_merchant_id'));
-        const merchantId = @json((string) config('googlepay.merchant_id'));
+        // const merchantId = @json((string) config('googlepay.merchant_id'));
 
         // 1. Configuración Base según tu documentación
         const baseRequest = {
@@ -232,7 +241,7 @@
             };
             paymentDataRequest.merchantInfo = {
                 merchantName: 'Example Merchant',
-                merchantId: gatewayMerchantId || merchantId
+                merchantId: getMerchantIdInput()
             };
 
             paymentsClient.loadPaymentData(paymentDataRequest)
@@ -253,6 +262,11 @@
                 .catch(function(err) {
                     console.error('Error en loadPaymentData:', err);
                 });
+        }
+
+        // Obtener el merchantId del input dinámicamente
+        function getMerchantIdInput() {
+            return document.getElementById('merchantId')?.value || 'placetopay';
         }
 
         const clearButton = document.getElementById('clear-form');

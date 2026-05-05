@@ -19,6 +19,7 @@ class ProdPayloadController extends Controller
             'decrypted' => session('decrypted'),
             'token' => session('token'),
             'environment' => session('environment'),
+            'merchantId' => old('merchantId', session('merchantId')),
         ]);
     }
 
@@ -27,14 +28,13 @@ class ProdPayloadController extends Controller
         $data = $request->validate([
             'token' => ['required', 'string'],
             'environment' => ['required', 'in:TEST,PRODUCTION'],
+            'merchantId' => ['required', 'string'],
         ]);
 
         $environment = $data['environment'];
         $isProd = $environment === 'PRODUCTION';
 
-        $merchantId = $isProd
-            ? (string) config('googlepay.prod_merchant_id')
-            : (string) config('googlepay.merchant_id');
+        $merchantId = $data['merchantId'];
 
         $privateKey = $isProd
             ? (string) config('googlepay.prod_private_key')
@@ -84,6 +84,7 @@ class ProdPayloadController extends Controller
                 ],
                 'token' => $data['token'],
                 'environment' => $environment,
+                'merchantId' => $merchantId,
                 'success' => true,
             ]);
 
@@ -93,8 +94,8 @@ class ProdPayloadController extends Controller
             return redirect()->route('prod-test.show')
                 ->with('success', false)
                 ->with('environment', $environment)
+                ->with('merchantId', $merchantId)
                 ->with('error', $exception->getMessage());
         }
     }
 }
-
